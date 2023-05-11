@@ -1,6 +1,6 @@
 CXX?=c++
 SDL2FLAGS=$(shell pkg-config sdl2 --cflags --libs)
-CXXFLAGS?=-std=c++11 -Wall -pedantic -Wshadow -Wstrict-aliasing -Wstrict-overflow -lm -framework SDL2_image -framework SDL2 -F /Library/Frameworks -lSDL2_gfx
+CXXFLAGS?=-std=c++11 -Wall -pedantic -Wshadow -Wstrict-aliasing -Wstrict-overflow -lSDL2_image -lSDL2 -lSDL2_gfx
 
 .PHONY: all msg clean fullclean
 
