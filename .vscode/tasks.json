@@ -10,6 +10,9 @@
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
+                "controllers/cell.cpp",
+                "controllers/game_controller.cpp",
+                "controllers/sdl_controller.cpp",
                 "-lSDL2",
                 "-lSDL2_image",
                 "-lSDL2_gfx"

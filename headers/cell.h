@@ -10,8 +10,8 @@ class cell {
         int get_surrounding_count();
         cell();
     private:
-        bool is_open;
-        bool is_mine;
+        bool open;
+        bool mine;
         std::shared_ptr<SDL_Texture> texture;
 };
 

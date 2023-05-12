@@ -5,10 +5,12 @@
 #include <iostream>
 #include <cstdlib>
 #include <memory>
+#include <thread> 
 
 using std::endl;
 using std::cerr;
 using std::cout;
+using std::shared_ptr;
 
 bool SDL_controller::init(int cw, int ch) {
     this->cw = cw;
@@ -22,7 +24,7 @@ bool SDL_controller::init(int cw, int ch) {
         cerr << "SDL_CreateWindow Error: " << SDL_GetError() << endl;
         return false;
     }
-    this->window = std::make_unique<SDL_Window>(win);
+    this->window = win;
     SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == nullptr) {
           cerr << "SDL_CreateRenderer Error" << SDL_GetError() << endl;
@@ -32,16 +34,46 @@ bool SDL_controller::init(int cw, int ch) {
  		  SDL_Quit();
           return false;
     }
-    this->renderer = std::make_unique<SDL_Renderer>(ren);
+
+    this->set_catch_events(true);
+    this->event_thread = std::thread(&SDL_controller::handle_events, this);
+
+    this->renderer = ren;
     return true;
 }
+
+void SDL_controller::handle_events() {
+    SDL_Event e;
+    while(this->catch_events) {
+        while(SDL_PollEvent(&e)) {
+            this->queue->setEvent(e);
+        }        
+    }
+}
+
+shared_ptr<SDL_Event> SDL_controller::get_input() {
+    return this->queue->getEvent();
+}
+
+void SDL_controller::set_catch_events(bool value) {
+    this->catch_events = value;
+}
+
+SDL_controller::SDL_controller() {
+    this->queue = new input_queue();
+}
+
+
 
 bool SDL_controller::init() {
     return init(500, 500);
 }
 
 SDL_controller::~SDL_controller() {
-    SDL_DestroyRenderer(this->renderer.get());
-    SDL_DestroyWindow(this->window.get());
+    catch_events = false;
+    event_thread.join();
+    SDL_DestroyRenderer(this->renderer);
+    SDL_DestroyWindow(this->window);
     SDL_Quit();
+    delete queue;
 }
