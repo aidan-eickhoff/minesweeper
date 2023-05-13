@@ -32,6 +32,9 @@ struct input_queue {
 
     void setEvent(SDL_Event e) {
         std::unique_lock<std::mutex> data_lock(data_mutex);
+        if(e.type == SDL_WINDOW_INPUT_FOCUS) {
+            return;
+        }
         if(e1.get() == nullptr) {
             e1 = std::make_shared<SDL_Event>(e);
         } else if(e2.get() == nullptr) {
@@ -43,12 +46,15 @@ struct input_queue {
 
 class SDL_controller {
     public:
-        bool init(int cw, int ch);
-        bool init();
         ~SDL_controller();
         SDL_controller();
-        shared_ptr<SDL_Event> get_input();
+        bool init();
+        bool init(int cw, int ch);
         void set_catch_events(bool value);
+        SDL_Renderer* get_renderer();
+        shared_ptr<SDL_Event> get_input();
+
+        bool draw_image(SDL_Texture* tex, SDL_Rect rect);
     private:
         int cw, ch;
         bool catch_events;

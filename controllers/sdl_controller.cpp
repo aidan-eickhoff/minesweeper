@@ -69,6 +69,11 @@ bool SDL_controller::init() {
     return init(500, 500);
 }
 
+SDL_Renderer* SDL_controller::get_renderer() {
+    return this->renderer;
+}
+
+
 SDL_controller::~SDL_controller() {
     catch_events = false;
     event_thread.join();

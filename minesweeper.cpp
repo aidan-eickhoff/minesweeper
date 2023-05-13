@@ -1,7 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
-#include <iostream>
 #include <memory>
 #include "headers/all.h"
 
@@ -14,19 +10,21 @@ void game_loop(shared_ptr<SDL_controller> sdl_controls, shared_ptr<game_controll
 
 int main() {
 
-    std::shared_ptr<SDL_controller> sdlcontroller(new SDL_controller());
+    std::shared_ptr<SDL_controller> sdl_controls(new SDL_controller());
 
-    sdlcontroller->init();
+    sdl_controls->init();
 
-    std::shared_ptr<game_controller> gamecontroller (new game_controller(10, 10));
+    std::shared_ptr<game_controller> game_controls (new game_controller(10, 10, sdl_controls->get_renderer()));
     
-    game_loop(sdlcontroller, gamecontroller);
+    game_loop(sdl_controls, game_controls);
 
+    return 0;
 }
 
 
 void game_loop(shared_ptr<SDL_controller> sdl_controls, shared_ptr<game_controller> game_controls) {
     while(!game_controls->game_ended()) {
         game_controls->handle_input(sdl_controls->get_input());
+        game_controls->render_screen(sdl_controls);
     }
 }
